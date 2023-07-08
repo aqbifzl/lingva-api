@@ -44,13 +44,10 @@ public:
     }
   }
 
-  std::string translate(std::string text, std::string cSource = "auto",
-                        std::string cTarget = "en") {
-    source = cSource;
-    target = cTarget;
-
-    std::string url =
-        "https://" + lingvaInstance + "/api/v1/" + source + '/' + target + "/";
+  std::string translate(std::string text, std::string cSource,
+                        std::string cTarget) {
+    std::string url = "https://" + lingvaInstance + "/api/v1/" + cSource + '/' +
+                      cTarget + "/";
     url.append(curl_easy_escape(curl, text.c_str(), text.length()));
 
     try {
@@ -60,6 +57,10 @@ public:
       std::cerr << "JSON parsing error: " << e.what() << std::endl;
     }
     return "";
+  }
+
+  std::string translate(std::string text) {
+    return translate(text, source, target);
   }
 
 private:
