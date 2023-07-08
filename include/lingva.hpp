@@ -77,14 +77,20 @@ private:
       curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
 
       res = curl_easy_perform(curl);
+
+      if (res != CURLE_OK) {
+        std::cerr << "CURL request error\n";
+        return std::string();
+      }
+
       return nlohmann::json::parse(result);
       curl_easy_cleanup(curl);
     }
     return std::string();
   }
   std::string source;
-  std::string lingvaInstance;
   std::string target;
+  std::string lingvaInstance;
   CURL *curl;
 };
 
