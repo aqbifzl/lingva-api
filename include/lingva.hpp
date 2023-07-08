@@ -1,6 +1,7 @@
 #ifndef __LINGVA_API__
 #define __LINGVA_API__
 #include <curl/curl.h>
+#include <curl/easy.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -16,8 +17,11 @@ class lingvaClient {
 public:
   lingvaClient(std::string source = "auto", std::string target = "en",
                std::string lingvaInstance = "lingva.ml")
-      : source(source), target(target), lingvaInstance(lingvaInstance) {
-    curl = curl_easy_init();
+      : source(source), target(target), lingvaInstance(lingvaInstance),
+        curl(curl_easy_init()) {}
+  ~lingvaClient() {
+    if (curl)
+      curl_easy_cleanup(curl);
   }
 
   std::vector<std::pair<std::string, std::string>> languages;
@@ -44,8 +48,8 @@ public:
     }
   }
 
-  std::string translate(std::string text, std::string cSource,
-                        std::string cTarget) {
+  std::string translate(const std::string &text, const std::string &cSource,
+                        const std::string &cTarget) {
     std::string url = "https://" + lingvaInstance + "/api/v1/" + cSource + '/' +
                       cTarget + "/";
     url.append(curl_easy_escape(curl, text.c_str(), text.length()));
@@ -56,17 +60,17 @@ public:
     } catch (const nlohmann::json::exception &e) {
       std::cerr << "JSON parsing error: " << e.what() << std::endl;
     }
-    return "";
+    return std::string();
   }
 
-  std::string translate(std::string text) {
+  std::string translate(const std::string &text) {
     return translate(text, source, target);
   }
 
 private:
-  nlohmann::json makeRequest(std::string url) {
+  nlohmann::json makeRequest(std::string &url) {
     if (curl) {
-      std::string result = "";
+      std::string result;
       CURLcode res;
       curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
       curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
@@ -76,7 +80,7 @@ private:
       return nlohmann::json::parse(result);
       curl_easy_cleanup(curl);
     }
-    return "";
+    return std::string();
   }
   std::string source;
   std::string lingvaInstance;
