@@ -6,7 +6,7 @@ Simple header only client to any instance of lingva translator. Includes basic f
 ### Install dependencies
 #### Arch-based distro
 ```
-sudo pacman -S core/curl extra/nlohmann-json
+sudo pacman -S curl nlohmann-json
 ```
 #### Debian-based distro
 ```
