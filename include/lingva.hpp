@@ -15,8 +15,9 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb,
 
 class lingvaClient {
 public:
-  lingvaClient(std::string source = "auto", std::string target = "en",
-               std::string lingvaInstance = "lingva.ml")
+  lingvaClient(const std::string &source = "auto",
+               const std::string &target = "en",
+               const std::string &lingvaInstance = "lingva.ml")
       : source(source), target(target), lingvaInstance(lingvaInstance),
         curl(curl_easy_init()) {}
   ~lingvaClient() {
